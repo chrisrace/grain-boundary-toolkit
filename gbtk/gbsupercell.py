@@ -2,9 +2,10 @@
 """ Module to handle definitions of supercells including
 generating atom coordinates and supercell specifications and writing out files
 in various formats
-Author:  Chris Race
-Date:    11th January 2017
-Contact: christopher.race@manchester.ac.uk
+
+| Author:  Chris Race
+| Date:    11th January 2017
+| Contact: christopher.race@manchester.ac.uk
 """
 import numpy as np
 import pandas as pd
@@ -325,6 +326,10 @@ class Supercell(object):
     def set_debug(self):
         """Turn on debug info"""
         self.debug = True
+    
+    def unset_debug(self):
+        """Turn off debug info"""
+        self.debug = False
         
     def set_normal_constraint(self):
         """Constrain all atoms to move only in z-direction. Note that this will only affect certain file formats"""
@@ -341,8 +346,16 @@ class Supercell(object):
     
     def calculate_atom_arrays(self, tol=GBSUPERCELL_TOL, vis_type=None, gamma_surf=False):
         """Method for calculating the final atom arrays and supercell specification ready for use, and prior to writing out.
+        
         Note that this method does the majority of the work of this class. This makes the method large and complicated, but at least keeps all the 
-        logic for handling microscopic degrees of freedom, constraints, etc in one place.
+        logic for handling microscopic degrees of freedom, constraints, etc in one place, i.e. features like the vacuum layer, whether certain atoms 
+        are constrained, relative grain shifts and excess volume at the boundaries  are all implemented in the process of calculating the atomic coordinates. 
+
+        If debug information is requested, by calling set_debug(), then this method also checks for equivalence between the two boundaries and reports the result of the test.
+
+        A final complexity is that the method works slightly differently depending on whether it is called to build a single instance of a boundary or as part of a gamma surface calculation.
+        If the latter, then the initial set of atomic coordinates, prior to the application of various types of microscopic adjustment, is retained in order to increase efficiency. 
+        See specification of the parameter gamma_surf, below.
 
         :param tol: Tolerance for atom position tests, defaults to GBSUPERCELL_TOL
         :type tol: float, optional
@@ -352,8 +365,6 @@ class Supercell(object):
         :type gamma_surf: bool, optional
         :raises RuntimeError: "Number of repeats in crystals must be set before filling with atoms", if set_supercell_size() has not been called
         :raises RuntimeError: "Incorrect value for vis_type in gbsupercell.calculate_atom_arrays()"
-        :return: _description_
-        :rtype: _type_
         """        
         if not self.supercell_size_set:
             raise RuntimeError("Number of repeats in crystals must be set before filling with atoms")
@@ -579,20 +590,6 @@ class Supercell(object):
             atom_data[n_black+i,0:3] = self.r_white[i,:]
             atom_data[n_black+i,3] = self.atom_types_white[i]
         return num_atoms, self.supercell, atom_data
-    
-    # def write_supercell_definition(self, filename='gb_definition.csv', ext='csv'):
-    #     catalogue_df = pd.DataFrame({ 
-    #         'h' : self.grainboundary.axis[0],
-    #         'k' : self.grainboundary.axis[1],
-    #         'l' : self.grainboundary.axis[2],
-    #     })
-    #     if ext == 'df':
-    #         new_df.to_hdf(filename,'df')
-    #     elif ext == 'csv':
-    #         new_df.to_csv(filename)
-    #     elif ext == 'xlsx':
-    #         new_df.to_excel(filename, sheet_name='Sheet1')
-    #     return
             
     def write_lammps(self, filename='lammps.txt', skew=True):
         """Write out the supercell in Lammps format

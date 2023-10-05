@@ -1,8 +1,9 @@
 # csl.py
 """ Module to handle definitions of coincidence site lattices
-Author:  Chris Race
-Date:    3rd January 2017
-Contact: christopher.race@manchester.ac.uk
+
+| Author:  Chris Race
+| Date:    3rd January 2017
+| Contact: christopher.race@manchester.ac.uk
 """
 import numpy as np
 import math
@@ -57,7 +58,7 @@ class CSL(object):
 
     
     def __init__(self, latticetype, lengths=None, angles=None):
-        """Initialise an empty csl with the specified lattice type
+        """Initialise an empty csl with the specified lattice type.
 
         :param latticetype: Lattice type, passed to Lattice module
         :type latticetype: string
@@ -89,7 +90,7 @@ class CSL(object):
         self.misorientation_rotation_set = False
 
     def set_debug(self):
-        """Turn on debug info
+        """Turn on debug info.
         """        
         self.debug = True
         
@@ -99,7 +100,7 @@ class CSL(object):
         self.debug = False
     
     def enable_search(self, maxradius=5):
-        """Populate an array of search vectors using spatialsearch module
+        """Populate an array of search vectors using spatialsearch module.
 
         :param maxradius: Maximum searhc radius, defaults to 5
         :type maxradius: int, optional
@@ -111,7 +112,7 @@ class CSL(object):
         self.search_enabled = True
         
     def set_axis(self, axis):
-        """_summary_
+        """Define misorientation axis for CSL.
 
         :param axis: Components of axis specified in multiples of the lattice cell vectors
         :type axis: [int,int,int]
@@ -124,7 +125,7 @@ class CSL(object):
         self.axis_set = True
     
     def set_angle(self, angle):
-        """Set the misorientation angle directly with a value in radians
+        """Set the misorientation angle directly with a value in radians.
 
         :param angle: Angle specified in radians
         :type angle: float
@@ -135,7 +136,7 @@ class CSL(object):
         
     def set_angle_mn(self, m, n):
         """Set the misorientation angle via a pair of integers.
-        Only works for cubic lattice types
+        Only works for cubic lattice types.
 
         :param m: first parameter
         :type m: integer
@@ -146,14 +147,14 @@ class CSL(object):
         """        
         if not self.axis_set:
             raise RuntimeError("Axis must be specified before setting angle using this method")
-        if lattice_type not in ['fcc', 'bcc', 'sc']:
+        if self.lattice.lattice_type not in ['fcc', 'bcc', 'sc']:
             raise RuntimeError("Lattice type " + self.lattice.lattice_type + " not supported.")    
         self.angle = calculate_theta(self.axis[0],self.axis[1],self.axis[2],m,n)
         self.angle_indices = np.array([m,n])
         self.angle_set = True
         
     def find_misorientation_rotation_matrix(self):
-        """Find rotation matrix to rotate each crystal about misorientation axis (by half misorientation angle)
+        """Find rotation matrix to rotate each crystal about misorientation axis (by half misorientation angle).
 
         :raises RuntimeError: "Misorientation axis must be set before calculating misorientation rotation" if misorientation axis not already set
         :raises RuntimeError: "Misorientation angle must be set before calculating misorientation rotation" if misorientation angle not already set
@@ -168,8 +169,8 @@ class CSL(object):
         
     def find_csl_basis(self, tol=CSL_TOL):
         """Find a set of basis vectors suitable for defining the csl by finding 3 non-colinear points in CSL lattice
-        i.e. lattice points commont to black and white lattices 
-        These vectors are recorded both in the original crystal lattice and in the cartesian basis in the original orientation
+        i.e. lattice points commont to black and white lattices.
+        These vectors are recorded both in the original crystal lattice and in the cartesian basis in the original orientation.
 
         :param tol: Tolerance used to define when two vectors are equivalent (max deviation of normalised dot product from unity), defaults to CSL_TOL
         :type tol: float, optional
@@ -291,7 +292,7 @@ class CSL(object):
         return pairs_found == pairs_needed
         
     def find_dsc_lattice(self, tol=CSL_TOL):
-        """Finds the DSC (displacement shift complete) lattice vectors for the CSL and populates instance variables to store the details
+        """Finds the DSC (displacement shift complete) lattice vectors for the CSL and populates instance variables to store the details.
 
         :param tol: Tolerance used to define when two vectors are equivalent (max deviation of normalised dot product from unity), defaults to CSL_TOL
         :type tol: float, optional
@@ -350,7 +351,7 @@ class CSL(object):
     
     try:
         def visualise_3d(self):
-            """Generate a plot showing the CSL"""
+            """Generate a plot showing the CSL."""
             data = []
             colors = ['rgb(155, 0, 0)', 'rgb(0, 155, 0)', 'rgb(0, 0, 155)']
     
@@ -407,7 +408,7 @@ class CSL(object):
             })
 
         def visualise_3d_rotated(self):
-            """Generate a plot showing the CSL"""
+            """Generate a plot showing the CSL in 3D."""
             data = []
             colors = ['rgb(155, 0, 0)', 'rgb(0, 155, 0)', 'rgb(0, 0, 155)']
     
@@ -466,7 +467,7 @@ class CSL(object):
             })
     
         def visualise_2d_rotated(self, axis=-1):
-            """Generate a plot showing a 2D projection of the CSL
+            """Generate a plot showing a 2D projection of the CSL.
 
             :param axis: Determines the vector down which the structure is projected (viewed). -1 selects misoreientation axis, [0,1,2] select one of the CSL vectors, defaults to -1
             :type axis: int, optional
@@ -720,7 +721,7 @@ def calculate_sigma(h,k,l,m,n,lattice_type='fcc'):
         while sigma%2==0:
             sigma = sigma/2
     else:
-        raise RuntimeError("Lattice type " + self.lattice.lattice_type + " not supported.")
+        raise RuntimeError("Lattice type " + lattice_type + " not supported.")
     return sigma
     
 def calculate_theta(h,k,l,m,n,lattice_type='fcc'):
@@ -749,12 +750,12 @@ def calculate_theta(h,k,l,m,n,lattice_type='fcc'):
         tansqphi = (msq/nsq)*(h*h + k*k + l*l)
         theta = 2.0*np.arctan(np.sqrt(tansqphi))
     else:
-        raise RuntimeError("Lattice type " + self.lattice.lattice_type + " not supported.")
+        raise RuntimeError("Lattice type " + lattice_type + " not supported.")
     return theta
 
 def calculate_cosine(h,k,l,m,n,lattice_type='fcc'):
     """Calculate the cosine of misorientation angle, expressed as the components of a fraction in a tuple 
-    for the grain boundary from the axis [h,k,l] and the integers m,n in a specified lattice type
+    for the grain boundary from the axis [h,k,l] and the integers m,n in a specified lattice type.
     Currently only implemented for cubic lattice types.
 
     :param h: First component of misorientation axis
@@ -780,5 +781,5 @@ def calculate_cosine(h,k,l,m,n,lattice_type='fcc'):
         costheta = (1.0 - tansqphi)/(1.0 + tansqphi)
         costhetafrac = Fraction(costheta).limit_denominator()
     else:
-        raise RuntimeError("Lattice type " + self.lattice.lattice_type + " not supported.")
+        raise RuntimeError("Lattice type " + lattice_type + " not supported.")
     return costhetafrac

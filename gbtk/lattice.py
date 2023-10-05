@@ -1,8 +1,9 @@
 # lattice.py
 """ Module to store and manipulate crystal lattices
-Author:  Chris Race
-Date:    3rd January 2017
-Contact: christopher.race@manchester.ac.uk
+
+| Author:  Chris Race
+| Date:    3rd January 2017
+| Contact: christopher.race@manchester.ac.uk
 """
 
 import numpy as np

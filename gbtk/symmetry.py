@@ -1,8 +1,9 @@
 # symmetry.py
 """ Module to define and store symmetry operations of crystal lattices
-Author:  Chris Race
-Date:    3rd January 2017
-Contact: christopher.race@manchester.ac.uk
+
+| Author:  Chris Race
+| Date:    3rd January 2017
+| Contact: christopher.race@manchester.ac.uk
 """
 
 import numpy as np
@@ -160,16 +161,16 @@ class Symmetry(object):
     #             break
     #     return equiv
 
-    # def vector_equiv(self, v1,v2, tol=SYMMETRY_TOL):
-    #     """ Check to see if two vectors are symmetrically equivalent"""
-    #     equiv = False
-    #     for i in range(np.shape(self.equiv_vecs)[0]):
-    #         trans_v1 = np.dot(self.equiv_vecs[i,:,:],v1)
-    #         #if np.abs(np.linalg.norm(trans_v1 - v2)) < tol:
-    #         if np.abs(1.0-np.abs(np.dot(trans_v1,v2)/np.linalg.norm(trans_v1)/np.linalg.norm(v2))) < tol:
-    #             equiv = True
-    #             break
-    #     return equiv
+    def vector_equiv(self, v1,v2, tol=SYMMETRY_TOL):
+        """ Check to see if two vectors are symmetrically equivalent"""
+        equiv = False
+        for i in range(np.shape(self.symops)[0]):
+            trans_v1 = np.dot(self.symops[i,:,:],v1)
+            #if np.abs(np.linalg.norm(trans_v1 - v2)) < tol:
+            if np.abs(1.0-np.abs(np.dot(trans_v1,v2)/np.linalg.norm(trans_v1)/np.linalg.norm(v2))) < tol:
+                equiv = True
+                break
+        return equiv
         
 
 

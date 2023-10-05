@@ -52,14 +52,6 @@ gbtk.lattice module
    :undoc-members:
    :show-inheritance:
 
-gbtk.outcar module
-------------------
-
-.. automodule:: gbtk.outcar
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 gbtk.spatialsearch module
 -------------------------
 

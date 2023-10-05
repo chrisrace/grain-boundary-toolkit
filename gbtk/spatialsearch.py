@@ -1,8 +1,9 @@
 # spatialsearch.py
 """ Module to define a spatialseaerch object for increasing the efficiency of grid-based searches
-Author:  Chris Race
-Date:    3rd January 2017
-Contact: christopher.race@manchester.ac.uk
+
+| Author:  Chris Race
+| Date:    3rd January 2017
+| Contact: christopher.race@manchester.ac.uk
 """
 import numpy as np
 
