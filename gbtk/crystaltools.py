@@ -27,7 +27,7 @@ def check_common_factors(indices, limit=100):
     common_factors = False
     cf = 2
     while (not common_factors) and (cf <= limit):
-        if (np.product(np.array(indices)%cf==0) == 1):
+        if (np.prod(np.array(indices)%cf==0) == 1):
             common_factors = True
         cf = cf + 1
     return common_factors
