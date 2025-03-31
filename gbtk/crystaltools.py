@@ -250,8 +250,8 @@ def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None, ov
     if overfill:
         # Slightly expand number of repeats to ensure overfilling
         for s in range(3):
-            repeats[s,0] = repeats[s,0] - 1
-            repeats[s,1] = repeats[s,1] + 1
+            repeats[s,0] = repeats[s,0] - 2
+            repeats[s,1] = repeats[s,1] + 2
     
     x = np.arange(int(repeats[0,0]),int(repeats[0,1]), 1)
     y = np.arange(int(repeats[1,0]),int(repeats[1,1]), 1)
@@ -296,23 +296,36 @@ def is_in_cell(cellvectors, pos, tol=1e-6, overfill=False):
                 incell = False
     return incell
     
-def wrap_to_cell(cellvectors, pos):
+def wrap_to_cell(cellvectors, pos, tol=1e-6, overfill=False):
     """Wrap a coordinate into a cell assuming periodic boundary conditions.
 
     :param cellvectors: parallelipiped to test
     :type cellvectors: ndarray((3,3),dtype=float)
     :param pos: position to test
     :type pos: ndarray(3,dtype=float)
+    :param tol: tolerance for testing, defaults to 1e-6
+    :type tol: float, optional
+    :param overfill: set to True to overfill the box. WARNING! useful for visualisations, but will probably break periodicity with periodic boundaries! Defaults to False
+    :type overfill: bool, optional
     :return: wrapped position
     :rtype: ndarray(3,dtype=float)
     """    
-    for i in range(3):
-        cross = np.cross(cellvectors[(i+1)%3,:],cellvectors[(i+2)%3,:])
-        test = np.dot(pos,cross)/np.dot(cellvectors[i,:],cross)
-        if test < 0.0:
-            pos = pos + cellvectors[i,:]
-        elif test >= 1.0:
-            pos = pos - cellvectors[i,:]
+    if not overfill:
+        for i in range(3):
+            cross = np.cross(cellvectors[(i+1)%3,:],cellvectors[(i+2)%3,:])
+            test = np.dot(pos,cross)/np.dot(cellvectors[i,:],cross)
+            if test < 0.0:
+                pos = pos + cellvectors[i,:]
+            elif test >= 1.0:
+                pos = pos - cellvectors[i,:]
+    else:
+         for i in range(3):
+            cross = np.cross(cellvectors[(i+1)%3,:],cellvectors[(i+2)%3,:])
+            test = np.dot(pos,cross)/np.dot(cellvectors[i,:],cross)
+            if test < 0.0 - tol:
+                pos = pos + cellvectors[i,:]
+            elif test > 1.0 + tol:
+                pos = pos - cellvectors[i,:]
     return pos
     
 def translate_coordinates(r, dr, cellvectors):
