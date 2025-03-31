@@ -442,9 +442,15 @@ class Supercell(object):
             
         
         # Pare atoms according to grain boundary position
-        self.r_black = r_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol),:]
+        if not overfill:
+            self.r_black = r_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol),:]
+        else:
+            self.r_black = r_black[(r_black[:,2]>=self.boundary_plane_z[0]-tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol),:]
         self.r_white = r_white[(r_white[:,2]<=self.boundary_plane_z[0]+tol) | (r_white[:,2]>=self.boundary_plane_z[1]-tol),:]
-        self.atom_types_black = atom_types_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol)]
+        if not overfill:
+            self.atom_types_black = atom_types_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol)]
+        else:
+            self.atom_types_black = atom_types_black[(r_black[:,2]>=self.boundary_plane_z[0]-tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol)]
         self.atom_types_white = atom_types_white[(r_white[:,2]<=self.boundary_plane_z[0]+tol) | (r_white[:,2]>=self.boundary_plane_z[1]-tol)]
 
         self.num_atoms_black = np.size(self.r_black,0)
@@ -484,9 +490,14 @@ class Supercell(object):
             shift = (1.0 - self.boundary_plane_z[1] / self.supercell[2,2]) * self.supercell[2,:]
             # First shift atoms through cell and rewrap to give a single boundary.
             for i in range(self.num_atoms_black):
-                self.r_black[i,:] = ct.wrap_to_cell(self.supercell,self.r_black[i,:] + shift)
-            for i in range(self.num_atoms_white):
-                self.r_white[i,:] = ct.wrap_to_cell(self.supercell,self.r_white [i,:] + shift)
+                self.r_black[i,:] = ct.wrap_to_cell(self.supercell,self.r_black[i,:] + shift, overfill=overfill)
+            if not overfill:
+                for i in range(self.num_atoms_white):
+                    self.r_white[i,:] = ct.wrap_to_cell(self.supercell,self.r_white [i,:] + shift, overfill=overfill)
+            else:
+                extra_shift = np.array([0.0,0.0,1.0]) # If overfilling the cell, then apply an extra shift to ensure correct wrapping
+                for i in range(self.num_atoms_white):
+                    self.r_white[i,:] = ct.wrap_to_cell(self.supercell,self.r_white [i,:] + shift + extra_shift, overfill=overfill) - extra_shift
             self.boundary_plane_z = self.boundary_plane_z + shift[2]
             # Now add vacuum
             vacuum_shift = (self.vacuum/self.supercell[2,2]) * self.supercell[2,:]
