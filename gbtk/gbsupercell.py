@@ -344,7 +344,7 @@ class Supercell(object):
         self.fix_block = fixblock
         self.blocks_fixed = True
     
-    def calculate_atom_arrays(self, tol=GBSUPERCELL_TOL, vis_type=None, gamma_surf=False):
+    def calculate_atom_arrays(self, tol=GBSUPERCELL_TOL, vis_type=None, gamma_surf=False, overfill=False):
         """Method for calculating the final atom arrays and supercell specification ready for use, and prior to writing out.
         
         Note that this method does the majority of the work of this class. This makes the method large and complicated, but at least keeps all the 
@@ -363,6 +363,8 @@ class Supercell(object):
         :type vis_type: str, optional
         :param gamma_surf: Set to True if this function is called from gbcalculation.gamma_surface_build(), defaults to False. This greatly increases the efficiency of gamma surface calculations by avoiding repeated recalculstation of the atom coordinates
         :type gamma_surf: bool, optional
+        :param overfill: set to True to overfill the box. WARNING! useful for visualisations, but will probably break periodicity with periodic boundaries! Defaults to False
+        :type overfill: bool, optional
         :raises RuntimeError: "Number of repeats in crystals must be set before filling with atoms", if set_supercell_size() has not been called
         :raises RuntimeError: "Incorrect value for vis_type in gbsupercell.calculate_atom_arrays()"
         """        
@@ -378,13 +380,13 @@ class Supercell(object):
             # Generate initial position arrays
             #fill_repeats_black = ct.get_repeats(self.supercell,self.a*self.lattice_basis_black,self.a)
             fill_repeats_black = ct.get_repeats(self.supercell/self.a,self.lattice_basis_black)
-            num_atoms_black, r_black, atom_types_black = ct.fill_box(self.supercell,self.a*self.lattice_basis_black, self.grainboundary.csl.lattice.basis_coords, fill_repeats_black, self.grainboundary.csl.lattice.atom_types[:])
+            num_atoms_black, r_black, atom_types_black = ct.fill_box(self.supercell,self.a*self.lattice_basis_black, self.grainboundary.csl.lattice.basis_coords, fill_repeats_black, self.grainboundary.csl.lattice.atom_types[:], overfill=overfill)
             r_black = np.array(r_black)
             atom_types_black = np.array(atom_types_black)
             
             #fill_repeats_white = ct.get_repeats(self.supercell,self.a*self.lattice_basis_white,self.a)
             fill_repeats_white = ct.get_repeats(self.supercell/self.a,self.lattice_basis_white)
-            num_atoms_white, r_white, atom_types_white = ct.fill_box(self.supercell,self.a*self.lattice_basis_white, self.grainboundary.csl.lattice.basis_coords, fill_repeats_white, self.grainboundary.csl.lattice.atom_types[:])
+            num_atoms_white, r_white, atom_types_white = ct.fill_box(self.supercell,self.a*self.lattice_basis_white, self.grainboundary.csl.lattice.basis_coords, fill_repeats_white, self.grainboundary.csl.lattice.atom_types[:], overfill=overfill)
             r_white = np.array(r_white)
             atom_types_white = np.array(atom_types_white)
             

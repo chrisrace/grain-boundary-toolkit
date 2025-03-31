@@ -220,7 +220,7 @@ def get_repeats(supercellvectors,cellvectors, axis=None,angle=None):
         boundingbox[s,1] = int(boundingbox[s,1] + 1)
     return boundingbox
     
-def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None):
+def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None, overfill=False):
     """Return a list of atom coordinates filling a box defined by supercellvectors, using a set of lattice
     vectors given by cellvectors and a basis. Repeats contains the search bounds required to fill the box.
 
@@ -234,6 +234,8 @@ def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None):
     :type repeats: ndarray((3,2),dtype=float)
     :param basis_types: array of integers specifiying type of atoms within unit cell, defaults to None
     :type basis_types: ndarray(M,dtype=int), optional
+    :param overfill: set to True to overfill the box. WARNING! useful for visualisations, but will probably break periodicity with periodic boundaries! Defaults to False
+    :type overfill: bool, optional
     :raises RuntimeError: _description_
     :return: (number of atoms, coordinates, types) or (number of atoms, coordinates)
     :rtype: (int, ndarray((N,3),dtype=float), ndarray(N,dtype=float)) or (int, ndarray((N,3),dtype=float))
@@ -253,7 +255,7 @@ def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None):
     for i in range(V):
         for p in range(nbasis):
             pos = (indices[i,0] + basis[p,0])*cellvectors[0,:] + (indices[i,1] + basis[p,1])*cellvectors[1,:] + (indices[i,2] + basis[p,2])*cellvectors[2,:]
-            if is_in_cell(supercellvectors, pos):
+            if is_in_cell(supercellvectors, pos, overfill=overfill):
                 r.append(pos.tolist())
                 if basis_types is not None:
                     t.append(basis_types[p])
@@ -262,7 +264,7 @@ def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None):
     else:
         return len(r),r
     
-def is_in_cell(cellvectors, pos, tol=1e-6):
+def is_in_cell(cellvectors, pos, tol=1e-6, overfill=False):
     """Test whether a poition vector lies within a cell (specified via edges of a parallelipiped).
 
     :param cellvectors: parallelipiped to test
@@ -271,6 +273,8 @@ def is_in_cell(cellvectors, pos, tol=1e-6):
     :type pos: ndarray(3,dtype=float)
     :param tol: tolerance for testing, defaults to 1e-6
     :type tol: float, optional
+    :param overfill: set to True to overfill the box. WARNING! useful for visualisations, but will probably break periodicity with periodic boundaries! Defaults to False
+    :type overfill: bool, optional
     :return: is the position within the cell?
     :rtype: boolean
     """    
@@ -278,8 +282,12 @@ def is_in_cell(cellvectors, pos, tol=1e-6):
     for i in range(3):
         cross = np.cross(cellvectors[(i+1)%3,:],cellvectors[(i+2)%3,:])
         test = np.dot(pos,cross)/np.dot(cellvectors[i,:],cross)
-        if test < 0.0-tol or test >= 1.0-tol:
-            incell = False
+        if not overfill:
+            if test < 0.0-tol or test >= 1.0-tol:
+                incell = False
+        else:
+            if test < 0.0-tol or test > 1.0+tol:
+                incell = False
     return incell
     
 def wrap_to_cell(cellvectors, pos):
