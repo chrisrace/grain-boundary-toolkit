@@ -246,6 +246,12 @@ def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None, ov
             raise RuntimeError("Array of atom types must match length of basis")
     r = []
     t = []
+
+    if overfill:
+        # Slightly expand number of repeats to ensure overfilling
+        for s in range(3):
+            repeats[s,0] = repeats[s,0] - 1
+            repeats[s,1] = repeats[s,1] + 1
     
     x = np.arange(int(repeats[0,0]),int(repeats[0,1]), 1)
     y = np.arange(int(repeats[1,0]),int(repeats[1,1]), 1)
