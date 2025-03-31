@@ -221,7 +221,7 @@ def get_repeats(supercellvectors,cellvectors, axis=None,angle=None):
     return boundingbox
     
 def fill_box(supercellvectors, cellvectors, basis, repeats, basis_types=None):
-    """Return a list of atom coordiantes filling a box defined by supercellvectors, using a set of lattice
+    """Return a list of atom coordinates filling a box defined by supercellvectors, using a set of lattice
     vectors given by cellvectors and a basis. Repeats contains the search bounds required to fill the box.
 
     :param supercellvectors: vectors describing supercell to fill

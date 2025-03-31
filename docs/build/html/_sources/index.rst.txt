@@ -20,7 +20,9 @@ Welcome to gbtk's documentation!
 
    manual/doc_0_00_overview
    manual/doc_1_01_lattice
-
+   manual/doc_1_02_csl
+   manual/doc_1_03_grainboundary
+   
 Indices and tables
 ==================
 
