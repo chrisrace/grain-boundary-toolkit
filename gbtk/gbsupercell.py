@@ -445,12 +445,12 @@ class Supercell(object):
         if not overfill:
             self.r_black = r_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol),:]
         else:
-            self.r_black = r_black[(r_black[:,2]>=self.boundary_plane_z[0]-tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol),:]
+            self.r_black = r_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol),:]
         self.r_white = r_white[(r_white[:,2]<=self.boundary_plane_z[0]+tol) | (r_white[:,2]>=self.boundary_plane_z[1]-tol),:]
         if not overfill:
             self.atom_types_black = atom_types_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<self.boundary_plane_z[1]-tol)]
         else:
-            self.atom_types_black = atom_types_black[(r_black[:,2]>=self.boundary_plane_z[0]-tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol)]
+            self.atom_types_black = atom_types_black[(r_black[:,2]>self.boundary_plane_z[0]+tol) & (r_black[:,2]<=self.boundary_plane_z[1]+tol)]
         self.atom_types_white = atom_types_white[(r_white[:,2]<=self.boundary_plane_z[0]+tol) | (r_white[:,2]>=self.boundary_plane_z[1]-tol)]
 
         self.num_atoms_black = np.size(self.r_black,0)
