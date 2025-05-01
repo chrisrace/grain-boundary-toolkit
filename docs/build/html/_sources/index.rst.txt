@@ -22,6 +22,8 @@ Welcome to gbtk's documentation!
    manual/doc_1_01_lattice
    manual/doc_1_02_csl
    manual/doc_1_03_grainboundary
+   manual/doc_1_04_gbsupercell
+   manual/doc_1_05_gbcalculation
    
 Indices and tables
 ==================

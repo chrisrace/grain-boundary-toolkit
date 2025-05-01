@@ -1,0 +1,213 @@
+LAMMPS (29 Aug 2024 - Update 2)
+#---------------------------------------------------------------------------------------------------
+# Initilise important features of simulation
+#---------------------------------------------------------------------------------------------------
+units 		metal	# Use metals units (Ang, ps, eV, bar, etc.)
+dimension 	3		# Run the simulation in three dimensions
+boundary 	p p p	# Use periodic boundaries in all three dimensions
+atom_style 	atomic	#
+#box tilt large		# Allow larger than normal tilt factors
+
+variable T_start equal 600
+variable T_end equal 200
+variable tstep equal 0.002
+timestep ${tstep}
+timestep 0.002
+
+read_data   lammps.txt	# Read in atom coordinates from a file
+Reading data file ...
+  triclinic box = (0 0 0) to (9.9204335 11.091382 19.734581) with tilt (4.9602167 9.3004064 30.778584)
+WARNING: Triclinic box skew is large. LAMMPS will run inefficiently. (src/domain.cpp:221)
+  1 by 1 by 1 MPI processor grid
+  reading atoms ...
+  144 atoms
+  read_data CPU = 0.001 seconds
+
+#---------------------------------------------------------------------------------------------------
+# Define how the forces between the atoms will be modelled
+#---------------------------------------------------------------------------------------------------
+pair_style eam/alloy
+pair_coeff * * Zope-Ti-Al-2003.eam.alloy.txt Al Al
+
+#---------------------------------------------------------------------------------------------------
+# Set behaviour of simulation
+#---------------------------------------------------------------------------------------------------
+group g_fixed type 2
+36 atoms in group g_fixed
+group g_other type 1
+108 atoms in group g_other
+fix f_freeze g_fixed setforce 0.0 0.0 0.0 	# Hold atoms of type 2 fixed in place
+#fix f_constrain g_other setforce 0.0 0.0 NULL 	# All atoms of type 1 to move only in z direction
+
+#---------------------------------------------------------------------------------------------------
+# Specify what information to write out
+#---------------------------------------------------------------------------------------------------
+thermo_style custom step atoms temp pe ke etotal fmax
+thermo_modify format 6 %20.10f
+thermo 1000
+
+#compute statom all stress/atom NULL
+compute peatom all pe/atom
+dump 1 all custom 100000 dump.* id type x y z c_peatom
+dump_modify 1 first yes
+
+
+#---------------------------------------------------------------------------------------------------
+# Initial relaxation
+#---------------------------------------------------------------------------------------------------
+velocity all set 0.0 0.0 0.0
+
+min_style 	cg
+min_modify dmax 0.1
+minimize 	0.0 1.0e-6 10000 100000
+Neighbor list info ...
+  update: every = 1 steps, delay = 0 steps, check = yes
+  max neighbors/atom: 2000, page size: 100000
+  master list distance cutoff = 8.724884
+  ghost atom cutoff = 8.724884
+  binsize = 4.362442, bins = 6 10 5
+  1 neighbor lists, perpetual/occasional/extra = 1 0 0
+  (1) pair eam/alloy, perpetual
+      attributes: half, newton on
+      pair build: half/bin/atomonly/newton/tri
+      stencil: half/bin/3d/tri
+      bin: standard
+Per MPI rank memory allocation (min/avg/max) = 4.694 | 4.694 | 4.694 Mbytes
+   Step        Atoms         Temp          PotEng         KinEng         TotEng          Fmax     
+         0         144   0             -363.00932      0                  -363.0093214915  10.84596     
+        75         144   0             -460.04775      0                  -460.0477452013  1.1320475e-07
+Loop time of 0.018368 on 1 procs for 75 steps with 144 atoms
+
+77.8% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = force tolerance
+  Energy initial, next-to-last, final = 
+     -363.009321491452  -460.047745201323  -460.047745201324
+  Force two-norm initial, final = 66.378479 6.7237263e-07
+  Force max component initial, final = 10.84596 1.1320475e-07
+  Final line search alpha, max atom move = 1 1.1320475e-07
+  Iterations, force evaluations = 75 128
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.012746   | 0.012746   | 0.012746   |   0.0 | 69.39
+Neigh   | 0.00046371 | 0.00046371 | 0.00046371 |   0.0 |  2.52
+Comm    | 0.00068496 | 0.00068496 | 0.00068496 |   0.0 |  3.73
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 1.8212e-05 | 1.8212e-05 | 1.8212e-05 |   0.0 |  0.10
+Other   |            | 0.004456   |            |       | 24.26
+
+Nlocal:            144 ave         144 max         144 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3028 ave        3028 max        3028 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          13170 ave       13170 max       13170 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 13170
+Ave neighs/atom = 91.458333
+Neighbor list builds = 1
+Dangerous builds = 0
+#---------------------------------------------------------------------------------------------------
+# Anneal boundary structures
+#---------------------------------------------------------------------------------------------------
+reset_timestep 100000
+fix md g_other nvt temp ${T_start} ${T_end} $(100.0*v_tstep)
+fix md g_other nvt temp 600 ${T_end} $(100.0*v_tstep)
+fix md g_other nvt temp 600 200 $(100.0*v_tstep)
+fix md g_other nvt temp 600 200 0.2000000000000000111
+
+velocity all create ${T_start} 4928459 rot yes mom yes dist gaussian
+velocity all create 600 4928459 rot yes mom yes dist gaussian
+run 10000
+Per MPI rank memory allocation (min/avg/max) = 4.95 | 4.95 | 4.95 Mbytes
+   Step        Atoms         Temp          PotEng         KinEng         TotEng          Fmax     
+    100000         144   600           -460.04775      11.09052           -448.9572247603  1.1320476e-07
+    101000         144   580.38854     -452.72495      10.728018          -441.9969354736  1.6705046    
+    102000         144   582.29564     -451.94628      10.763269          -441.1830096720  1.5405568    
+    103000         144   556.50942     -454.51302      10.286632          -444.2263864540  1.3731161    
+    104000         144   493.2928      -455.80487      9.1181231          -446.6867444195  1.3345526    
+    105000         144   498.49223     -455.60557      9.2142305          -446.3913388014  1.5681402    
+    106000         144   432.6539      -456.12961      7.9972616          -448.1323505059  1.178282     
+    107000         144   449.72558     -456.58258      8.3128179          -448.2697627534  1.1510819    
+    108000         144   408.99412     -457.40793      7.5599293          -449.8479976396  1.1966689    
+    109000         144   370.7595      -458.09442      6.8531931          -451.2412297897  1.0468829    
+    110000         144   333.84989     -458.66953      6.1709483          -452.4985818355  1.0932184    
+Loop time of 0.976448 on 1 procs for 10000 steps with 144 atoms
+
+Performance: 1769.680 ns/day, 0.014 hours/ns, 10241.206 timesteps/s, 1.475 Matom-step/s
+99.8% CPU use with 1 MPI tasks x no OpenMP threads
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.88988    | 0.88988    | 0.88988    |   0.0 | 91.13
+Neigh   | 0.011232   | 0.011232   | 0.011232   |   0.0 |  1.15
+Comm    | 0.052607   | 0.052607   | 0.052607   |   0.0 |  5.39
+Output  | 7.8211e-05 | 7.8211e-05 | 7.8211e-05 |   0.0 |  0.01
+Modify  | 0.010554   | 0.010554   | 0.010554   |   0.0 |  1.08
+Other   |            | 0.01209    |            |       |  1.24
+
+Nlocal:            144 ave         144 max         144 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3036 ave        3036 max        3036 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          13244 ave       13244 max       13244 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 13244
+Ave neighs/atom = 91.972222
+Neighbor list builds = 22
+Dangerous builds = 0
+unfix md
+
+#---------------------------------------------------------------------------------------------------
+# Final relaxation
+#---------------------------------------------------------------------------------------------------
+velocity all set 0.0 0.0 0.0
+
+min_style 	cg
+min_modify dmax 0.1
+minimize 	0.0 1.0e-6 10000 100000
+Per MPI rank memory allocation (min/avg/max) = 6.075 | 6.075 | 6.075 Mbytes
+   Step        Atoms         Temp          PotEng         KinEng         TotEng          Fmax     
+    110000         144   0             -458.66953      0                  -458.6695301708  1.0932184    
+    110063         144   0             -461.63002      0                  -461.6300213584  1.3522599e-07
+Loop time of 0.0137479 on 1 procs for 63 steps with 144 atoms
+
+97.9% CPU use with 1 MPI tasks x no OpenMP threads
+
+Minimization stats:
+  Stopping criterion = force tolerance
+  Energy initial, next-to-last, final = 
+      -458.66953017077  -461.630021358413  -461.630021358413
+  Force two-norm initial, final = 5.7641758 7.4220534e-07
+  Force max component initial, final = 1.0932184 1.3522599e-07
+  Final line search alpha, max atom move = 1 1.3522599e-07
+  Iterations, force evaluations = 63 125
+
+MPI task timing breakdown:
+Section |  min time  |  avg time  |  max time  |%varavg| %total
+---------------------------------------------------------------
+Pair    | 0.01241    | 0.01241    | 0.01241    |   0.0 | 90.27
+Neigh   | 0          | 0          | 0          |   0.0 |  0.00
+Comm    | 0.00065912 | 0.00065912 | 0.00065912 |   0.0 |  4.79
+Output  | 0          | 0          | 0          |   0.0 |  0.00
+Modify  | 1.7373e-05 | 1.7373e-05 | 1.7373e-05 |   0.0 |  0.13
+Other   |            | 0.0006617  |            |       |  4.81
+
+Nlocal:            144 ave         144 max         144 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Nghost:           3038 ave        3038 max        3038 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+Neighs:          13190 ave       13190 max       13190 min
+Histogram: 1 0 0 0 0 0 0 0 0 0
+
+Total # of neighbors = 13190
+Ave neighs/atom = 91.597222
+Neighbor list builds = 0
+Dangerous builds = 0
+
+Total wall time: 0:00:01

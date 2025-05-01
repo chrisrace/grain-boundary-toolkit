@@ -113,9 +113,9 @@ def gamma_surface_analyse(shiftrange, shiftres, expansionrange, expansionres, pa
     Important! Whilst the build function will generate the input files (POSCARS) for vasp calulations, this function assumes that the results are in lammps dump files. 
     It further assumes that the dump files one per step and are named dump.* where the asterisk is the step number. In particualr, it uses the file named dump.0
 
-    To interpolate the optimal configuration there is first a quadratic interpolation at each shift combination (each point in the gamma surface grid) to build a sruface optimised 
-    for expansion at the boundary. THen this surface is quadratically interpolated in the two shift directions to find the overall optimimum. Where an insufficuanet range of expansion is 
-    probed and so no minimum existis in the dataset, this is flagged in the 'completion' column of the gamma surface files.
+    To interpolate the optimal configuration there is first a quadratic interpolation at each shift combination (each point in the gamma surface grid) to build a surface optimised 
+    for expansion at the boundary. Then this surface is quadratically interpolated in the two shift directions to find the overall optimimum. Where an insufficient range of expansion is 
+    probed and so no minimum exists in the dataset, this is flagged in the 'completion' column of the gamma surface files.
 
     A number of files are written, as follows:
 
@@ -498,9 +498,3 @@ if __name__ == "__main__":
     filestocopy = ['relax.in']
     gamma_surface_build(testsc, shiftrange, shiftres, expansionrange, expansionres, path, filestocopy)
     
-    
-    #testsc.set_shift([0.2,0.2])
-    #testsc.set_expansion(0.5)
-    #testsc.set_vacuum(3.0)
-    #testsc.set_fixblock(1.0)
-    #testsc.write_lammps()
