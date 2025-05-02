@@ -5,7 +5,7 @@ in various formats
 
 | Author:  Chris Race
 | Date:    11th January 2017
-| Contact: christopher.race@manchester.ac.uk
+| Contact: christopher.race@sheffield.ac.uk
 """
 import numpy as np
 import pandas as pd

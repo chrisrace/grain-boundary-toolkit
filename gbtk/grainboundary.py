@@ -4,7 +4,7 @@ It may or may not have a CSL associated with the axis-angle combination
 
 | Author:  Chris Race
 | Date:    4th January 2017
-| Contact: christopher.race@manchester.ac.uk
+| Contact: christopher.race@sheffield.ac.uk
 """
 
 import numpy as np

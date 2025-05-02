@@ -3,7 +3,7 @@
 
 | Author:  Chris Race
 | Date:    3rd January 2017
-| Contact: christopher.race@manchester.ac.uk
+| Contact: christopher.race@sheffield.ac.uk
 """
 
 import numpy as np

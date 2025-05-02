@@ -1,24 +1,37 @@
 Introduction
 ============
 
-``simpleble`` is a high-level OO Python package which aims to provide an easy and intuitive way of interacting with nearby Bluetooth Low Energy (BLE) devices (GATT servers). In essence, this package is an extension of the ``bluepy`` package created by Ian Harvey (see `here <https://github.com/IanHarvey/bluepy/>`_)
+``gbtk``, the Grain Boundary Toolkit, is a Python package to explore grain boundary geometry and build supercells suitable for atomistiv simulation (or visualisation) of grain boundaries.
 
-The aim here was to define a single object which would allow users to perform the various operations performed by the ``bluepy.btle.Peripheral``, ``bluepy.btle.Scanner``, ``bluepy.btle.Service`` and ``bluepy.btle.Characteristic`` classes of ``bluepy``, from one central place. This functionality is facilitated by the ``simpleble.SimpleBleClient`` and ``simpleble.SimpleBleDevice`` classes, where the latter is an extention/subclass of ``bluepy.btle.Peripheral``, combined with properties of ``bluepy.btle.ScanEntry``.
-
-The current implementation has been developed in Python 3 and tested on a Raspberry Pi Zero W, running Raspbian 9 (stretch), but should work with Python 2.7+ (maybe with minor modifications in terms of printing and error handling) and most Debian based OSs.
+The current implementation has been developed over a number of years and has been used (in various iterations) to build the systems explored in a number of published works.
 
 Motivation
 **********
 
-As a newbie experimenter/hobbyist in the field of IoT using BLE communications, I found it pretty hard to identify a Python package which would enable one to use a Raspberry Pi (Zero W inthis case) to swiftly scan, connect to and read/write from/to a nearby BLE device (GATT server).
-
-This package is intended to provide a quick, as well as (hopefully) easy to undestand, way of getting a simple BLE GATT client up and running, for all those out there, who, like myself, are hands-on learners and are eager to get their hands dirty from early on.
+When starting out to explore grain boundaries via atimistic siualtion, I found that many of the general purpose packages for preparing atomistic simulation lacked the ability to build any boundaries other than a few very special boundaries. They aslo lacked the functionality to explore the so-called *microscopic degrees of freedom* of grain boundary geometry on which grain boundary properties stringly depend. 
+Over the years, I have added functionality to the package as and when I have required it (see below for some of the consequences of this!).
 
 Limitations
 ***********
 
-- As my main use-case scenario was to simply connect two devices, the current version of :class:`gbtk.Lattice` has been designed and implemented with this use-case in mind. As such, if you are looking for a package to allow you to connect to multiple devices, then know that off-the-self this package DOES NOT allow you to do so. However, implementing such a feature is an easily achievable task, which has been planned for sometime in the near future and if there proves to be interest on the project, I would be happy to speed up the process.
+The package is not brilliantly written, largely because I am a long way from being the world's greatest programmer. I have cleaned it up a lot, prior to release, and commented it so that sphinx can create some documentation. But it remains far from perfect!
 
-- Only Read and Write operations are currently supported, but I am planning on adding Notifications soon.
+Some bits of the package are better than others. Some, e.g. `gbcalculation.py` are really rather shonky. I has been used, mainly by me, but not formally tested. There will be plenty of bugs and bits of it will work sometimes but not others.
+
+There are some things that the code does not do, but probably should. For example, it has no functionality for the addition or removal of atoms at the boundary, which can be an important microscopic degree of freedom to explore when optimising structure.
+
+With hindsight, I should have written the code as part of e.g. the ASE library, but at the time I started out that would have felt like a risky attempt to pick a winner.
+
+Documentation
+*************
+The documentation here takes the form of the sphinx generated documnetation and a set of python notebooks demonstrating how the code can be used. It has a broad range of functionality and can be used to, e.g.:
+
+- Explore possible grain boundary geometries, in terms of macroscopic degrees of freedom (i.e. misorientation axes and angles and grain boundary planes), subject to constraints on the maximum numbre of atoms you can simulate (particularly useful when considering denstiy functional theory simulations).
+- Build supercells contatining a specified grain boundary, with the ability to explore some of the microscopic degrees of freedom (relative grain translations, grain boundary plane translation and excess volume).
+- Build supercells containing a pair of opposing grain boundaries suitable for the use of fully periodic boundary conditions or cells with a single grain boundary.
+- Enforce an orthogonal supercell (often required for migration simuations) or allow triclinic supercells (useful for minimising the number of atoms required).
+- Build a suite of simulation inputs suitable for exploring a *gamma surface* of grain boundary energy to assist in optimising the grain boundary structure.
+- Create supercells suitable for visualisation and 3D printing.
+
 
 
