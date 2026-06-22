@@ -385,7 +385,7 @@ def calculate_edges_ppp():
     """Define the edges of a parallelipiped consistent with the ordering in calculate_corners_ppp function.
 
     :return: edges of parallelipiped specified as pairs of integers indexing corners at either end of edge
-    :rtype: ndarray((8,3),dtype=int)
+    :rtype: ndarray((12,2),dtype=int)
     """    
     edges = np.array([[0,1],[0,2],[0,3],[1,4],[2,4],[4,7],[5,7],[3,5],[3,6],[6,7],[1,6],[2,5]])
     return edges
