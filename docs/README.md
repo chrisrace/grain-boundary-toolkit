@@ -1,0 +1,26 @@
+# Grain Boundary ToolKit
+
+Written by: C. P. Race
+
+## Introduction
+``gbtk``, the Grain Boundary Toolkit, is a Python package to explore grain boundary geometry and build supercells suitable for atomistic simulation (or visualisation) of grain boundaries.
+The current implementation has been developed over a number of years and has been used (in various iterations) to build the systems explored in a number of published works.
+
+## Motivation
+When starting out to explore grain boundaries via atomistic simulation, I found that many of the general purpose packages for preparing atomistic simulations lacked the ability to build any boundaries other than a few very special boundaries. They also lacked the functionality to explore the so-called *microscopic degrees of freedom* of grain boundary geometry on which grain boundary properties strongly depend. 
+Over the years, I have added functionality to the package as and when I have required it (see below for some of the consequences of this!).
+
+## Limitations
+The package is not brilliantly written, largely because I am a long way from being the world's greatest programmer. I have cleaned it up a lot, prior to release, and commented it so that sphinx can create some documentation. But it remains far from perfect!
+There are some things that the code does not do, but probably should. For example, it has no functionality for the addition or removal of atoms at the boundary, which can be an important microscopic degree of freedom to explore when optimising structure.
+With hindsight, I should have written the code as part of e.g. the ASE library, but at the time I started out that would have felt like a risky attempt to pick a winner.
+
+## Documentation
+The documentation takes the form of the sphinx generated documentation and a set of python notebooks demonstrating how the code can be used. It has a broad range of functionality and can be used to, e.g.:
+
+- Explore possible grain boundary geometries, in terms of macroscopic degrees of freedom (i.e. misorientation axes and angles and grain boundary planes), subject to constraints on the maximum number of atoms you can simulate (particularly useful when considering density functional theory simulations).
+- Build supercells contatining a specified grain boundary, with the ability to explore some of the microscopic degrees of freedom (relative grain translations, grain boundary plane translation and excess volume).
+- Build supercells containing a pair of opposing grain boundaries suitable for the use of fully periodic boundary conditions or cells with a single grain boundary.
+- Enforce an orthogonal supercell (often required for migration simulations) or allow triclinic supercells (useful for minimising the number of atoms required).
+- Build a suite of simulation inputs suitable for exploring a *gamma surface* of grain boundary energy to assist in optimising the grain boundary structure.
+- Create supercells suitable for visualisation and 3D printing.
