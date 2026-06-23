@@ -677,7 +677,7 @@ def write_csl_catalogue(folder, lattice_type, axis, limit, ext='df', include_bas
                 raise RuntimeError("Atom limit can only be applied if include_basis=true")
             new_df = pd.concat([pd.DataFrame(),catalogue_df[catalogue_df['num_atoms'] <= atom_limit]], ignore_index=True)
             if ext == 'df':
-                new_df.to_hdf(filename,'df')
+                new_df.to_hdf(filename, key='df')
             elif ext == 'csv':
                 catalogue_df[catalogue_df['num_atoms'] <= atom_limit].to_csv(filename)
             elif ext == 'xlsx':
@@ -685,7 +685,7 @@ def write_csl_catalogue(folder, lattice_type, axis, limit, ext='df', include_bas
             return new_df
         else:
             if ext == 'df':
-                catalogue_df.to_hdf(filename,'df')
+                catalogue_df.to_hdf(filename, key='df')
             elif ext == 'csv':
                 catalogue_df.to_csv(filename)
             elif ext == 'xlsx':
