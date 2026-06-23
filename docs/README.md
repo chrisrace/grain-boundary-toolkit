@@ -2,6 +2,8 @@
 
 Written by: C. P. Race
 
+Documentation is at [ReadTheDocs](https://grain-boundary-toolkit.readthedocs.io)
+
 ## Introduction
 ``gbtk``, the Grain Boundary Toolkit, is a Python package to explore grain boundary geometry and build supercells suitable for atomistic simulation (or visualisation) of grain boundaries.
 The current implementation has been developed over a number of years and has been used (in various iterations) to build the systems explored in a number of published works.
