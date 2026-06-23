@@ -628,7 +628,7 @@ def write_gb_catalogue(folder, lattice_type, axis, m, n, limit, ext='df', atom_l
     if (atom_limit is not None):
         new_df = pd.concat([pd.DataFrame(),catalogue_df[catalogue_df['num_atoms'] <= atom_limit]], ignore_index=True)
         if ext == 'df':
-            new_df.to_hdf(filename,'df')
+            new_df.to_hdf(filename, key='df')
         elif ext == 'csv':
             new_df.to_csv(filename)
         elif ext == 'xlsx':
@@ -636,7 +636,7 @@ def write_gb_catalogue(folder, lattice_type, axis, m, n, limit, ext='df', atom_l
         return new_df
     else:
         if ext == 'df':
-            catalogue_df.to_hdf(filename,'df')
+            catalogue_df.to_hdf(filename, key='df')
         elif ext == 'csv':
             catalogue_df.to_csv(filename)
         elif ext == 'xlsx':
