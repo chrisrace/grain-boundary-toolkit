@@ -12,7 +12,6 @@ Welcome to gbtk's documentation!
 
    intro
    gbtk
-   #examples
 
 .. toctree::
    :maxdepth: 2
