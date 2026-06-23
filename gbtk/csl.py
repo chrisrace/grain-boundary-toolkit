@@ -6,7 +6,6 @@
 | Contact: christopher.race@sheffield.ac.uk
 """
 import numpy as np
-import math
 import pandas as pd
 import warnings
 from fractions import Fraction
